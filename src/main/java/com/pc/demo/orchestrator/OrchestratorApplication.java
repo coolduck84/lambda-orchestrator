@@ -1,5 +1,6 @@
 package com.pc.demo.orchestrator;
 
+import java.util.List;
 import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
-import com.pc.demo.orchestrator.service.DBService;
+import com.pc.demo.orchestrator.entity.Phase;
+import com.pc.demo.orchestrator.service.entity.PhaseService;
 
 @SpringBootApplication
 public class OrchestratorApplication {
@@ -21,7 +23,7 @@ public class OrchestratorApplication {
 	}
 
 	@Autowired
-	DBService dbService;
+	PhaseService phaseService;
 
 	@Bean
 	public Function<String, String> uppercase() {
@@ -29,7 +31,12 @@ public class OrchestratorApplication {
 			logger.info("Inside Lambda Handler...");
 
 			try {
-				dbService.getData();
+				List<Phase> phaseList = phaseService.findAll();
+				if(phaseList == null || phaseList.size() == 0)
+					logger.info("No phases are available to display.");
+				else {
+					phaseList.forEach(phase -> logger.info(phase.toString()));
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
